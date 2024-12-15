@@ -1,0 +1,10 @@
+flask
+torch
+torchvision
+torchaudio
+opencv-python
+pillow
+numpy
+matplotlib
+requests
+tqdm

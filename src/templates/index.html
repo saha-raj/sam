@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>SAM Annotator</h1>
+    <div class="controls">
+        <input type="file" id="imageInput" accept="image/*">
+        <div class="tool-controls">
+            <button id="positivePoint" class="active">Positive Point (+)</button>
+            <button id="negativePoint">Negative Point (-)</button>
+            <button id="clearPoints">Clear Points</button>
+            <button id="generateMask">Generate Mask</button>
+        </div>
+    </div>
+    <div class="canvas-container">
+        <canvas id="imageCanvas"></canvas>
+        <canvas id="pointCanvas"></canvas>
+        <canvas id="maskCanvas"></canvas>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+[MASTER]
+disable=
+    C0114, # missing-module-docstring
+    C0116, # missing-function-docstring
+    W0611, # unused-import
+    C0411, # wrong-import-order
+    E0401  # import-error
+
+[FORMAT]
+max-line-length=120
