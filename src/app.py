@@ -11,10 +11,15 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Required for session
 
-# Initialize SAM
-CHECKPOINT_PATH = "models/checkpoints/sam_vit_h_4b8939.pth"
+# # Initialize SAM - large model
+# CHECKPOINT_PATH = "models/checkpoints/sam_vit_h_4b8939.pth"
+# DEVICE = "cpu"
+# MODEL_TYPE = "vit_h"
+
+# Initialize SAM - small model
+CHECKPOINT_PATH = "models/checkpoints/sam_vit_b_01ec64.pth"
 DEVICE = "cpu"
-MODEL_TYPE = "vit_h"
+MODEL_TYPE = "vit_b"
 
 sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
 sam.to(device=DEVICE)
