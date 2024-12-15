@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearButton = document.getElementById('clearPoints');
     const positiveButton = document.getElementById('positivePoint');
     const negativeButton = document.getElementById('negativePoint');
+    const generateButton = document.getElementById('generateSegment');
 
     // Parameter inputs
     const parameterInputs = {
@@ -129,9 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = isPositivePoint ? '#00ff00' : '#ff0000';
         ctx.fill();
-
-        // Generate mask after each point
-        await generateMask();
     });
 
     clearButton.addEventListener('click', function() {
@@ -152,6 +150,12 @@ document.addEventListener('DOMContentLoaded', function() {
         isPositivePoint = false;
         negativeButton.classList.add('active');
         positiveButton.classList.remove('active');
+    });
+
+    generateButton.addEventListener('click', async function() {
+        if (points.length > 0) {
+            await generateMask();
+        }
     });
 
     imageInput.addEventListener('change', function(e) {
