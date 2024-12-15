@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const negativeButton = document.getElementById('negativePoint');
     const generateButton = document.getElementById('generateSegment');
     const loaderContainer = document.querySelector('.loader-container');
+    const downloadButton = document.getElementById('downloadMask');
 
     // Parameter inputs
     const parameterInputs = {
@@ -26,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         positiveButton, 
         negativeButton, 
         clearButton, 
-        generateButton
+        generateButton,
+        downloadButton
     ];
 
     // Update parameter display values
@@ -196,4 +198,69 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = e.target.files[0];
         if (file) loadImage(file);
     });
+
+    function downloadMaskedImage() {
+        if (!currentImage || !maskCanvas) return;
+        
+        try {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = imageCanvas.width;
+            tempCanvas.height = imageCanvas.height;
+            const ctx = tempCanvas.getContext('2d');
+            
+            console.log('Canvas dimensions:', tempCanvas.width, tempCanvas.height);
+            
+            // Fill with black background
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Get mask data
+            const maskCtx = maskCanvas.getContext('2d');
+            const maskData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+            
+            // DEBUG: More detailed mask inspection
+            console.log('First few mask pixels:');
+            for(let i = 0; i < 40; i += 4) {
+                console.log(`Pixel ${i/4}:`, {
+                    r: maskData.data[i],
+                    g: maskData.data[i+1],
+                    b: maskData.data[i+2],
+                    a: maskData.data[i+3]
+                });
+            }
+            
+            // Get image data
+            const imageCtx = imageCanvas.getContext('2d');
+            const imageData = imageCtx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+            
+            // Create composite
+            const finalImageData = ctx.createImageData(tempCanvas.width, tempCanvas.height);
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                // Try using the red channel of the mask instead of alpha
+                if (maskData.data[i] > 0) {  // Changed to check red channel
+                    finalImageData.data[i] = imageData.data[i];        // R
+                    finalImageData.data[i + 1] = imageData.data[i + 1];// G
+                    finalImageData.data[i + 2] = imageData.data[i + 2];// B
+                    finalImageData.data[i + 3] = 255;                  // A
+                } else {
+                    finalImageData.data[i] = 0;     // R
+                    finalImageData.data[i + 1] = 0; // G
+                    finalImageData.data[i + 2] = 0; // B
+                    finalImageData.data[i + 3] = 255; // A
+                }
+            }
+            
+            ctx.putImageData(finalImageData, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'masked_image.png';
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error('Error creating download:', error);
+        }
+    }
+
+    downloadButton.addEventListener('click', downloadMaskedImage);
 });
