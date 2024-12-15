@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const positiveButton = document.getElementById('positivePoint');
     const negativeButton = document.getElementById('negativePoint');
     const generateButton = document.getElementById('generateSegment');
+    const loaderContainer = document.querySelector('.loader-container');
 
     // Parameter inputs
     const parameterInputs = {
@@ -19,6 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let pointLabels = [];
     let currentImage = null;
     let isPositivePoint = true;
+
+    // Add at the top with other constants
+    const allButtons = [
+        positiveButton, 
+        negativeButton, 
+        clearButton, 
+        generateButton
+    ];
 
     // Update parameter display values
     Object.entries(parameterInputs).forEach(([key, input]) => {
@@ -67,28 +76,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function showLoader() {
+        const imageCanvas = document.getElementById('imageCanvas');
+        const loader = document.querySelector('.loader');
+        
+        // Get image dimensions
+        const imageWidth = imageCanvas.width;
+        const imageHeight = imageCanvas.height;
+        
+        // Position loader at center of image
+        loader.style.left = `${imageWidth/2}px`;
+        loader.style.top = `${imageHeight/2}px`;
+        
+        loaderContainer.style.display = 'block';
+        allButtons.forEach(button => {
+            button.disabled = true;
+        });
+    }
+
+    function hideLoader() {
+        loaderContainer.style.display = 'none';
+        allButtons.forEach(button => {
+            button.disabled = false;
+        });
+    }
+
     async function generateMask() {
         if (points.length === 0) return;
 
         try {
+            showLoader();
             const params = {};
             Object.entries(parameterInputs).forEach(([key, input]) => {
                 params[key] = parseFloat(input.value);
             });
-
-            const requestData = {
-                points: points,
-                labels: pointLabels,
-                parameters: params
-            };
-            console.log("Sending to server:", requestData);
 
             const response = await fetch('/segment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify({
+                    points: points,
+                    labels: pointLabels,
+                    parameters: params
+                })
             });
 
             if (!response.ok) {
@@ -105,11 +137,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
                 ctx.globalAlpha = 0.5;
                 ctx.drawImage(img, 0, 0);
+                hideLoader();
             }
             img.src = 'data:image/png;base64,' + data.mask;
 
         } catch (error) {
             console.error('Error:', error);
+            hideLoader();
         }
     }
 
