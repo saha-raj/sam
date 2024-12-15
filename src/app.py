@@ -128,24 +128,40 @@ def generate_masks():
 
 @app.route('/segment', methods=['POST'])
 def segment():
-    data = request.json
-    point_coords = np.array(data['points'])
-    point_labels = np.array(data['labels'])
-    
-    masks, scores, _ = predictor.predict(
-        point_coords=point_coords,
-        point_labels=point_labels,
-        multimask_output=True
-    )
-    
-    mask = masks[0].astype(np.uint8) * 255
-    _, buffer = cv2.imencode('.png', mask)
-    mask_b64 = base64.b64encode(buffer).decode('utf-8')
-    
-    return jsonify({
-        'mask': mask_b64,
-        'score': float(scores[0])
-    })
+    global current_image
+    try:
+        if current_image is None:
+            return jsonify({'error': 'No image set'}), 400
+            
+        predictor.set_image(current_image)
+        
+        data = request.json
+        point_coords = np.array(data['points'])
+        point_labels = np.array(data['labels'])
+        parameters = data.get('parameters', {})
+        
+        # Get masks using the correct parameter names
+        masks, scores, _ = predictor.predict(
+            point_coords=point_coords,
+            point_labels=point_labels,
+            multimask_output=True
+        )
+        
+        # Select the mask with the highest score
+        mask = masks[np.argmax(scores)].astype(np.uint8) * 255
+        _, buffer = cv2.imencode('.png', mask)
+        mask_b64 = base64.b64encode(buffer).decode('utf-8')
+        
+        return jsonify({
+            'mask': mask_b64,
+            'score': float(np.max(scores))
+        })
+        
+    except Exception as e:
+        import traceback
+        print(f"Error in segment: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

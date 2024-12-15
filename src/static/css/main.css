@@ -10,6 +10,7 @@
 
 .tool-controls {
     margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .tool-controls button {
@@ -22,6 +23,32 @@
     background-color: #007bff;
     color: white;
     border: none;
+}
+
+.parameter-controls {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.parameter {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.parameter label {
+    min-width: 200px;
+}
+
+.parameter input {
+    width: 200px;
+}
+
+.parameter .value {
+    min-width: 50px;
 }
 
 .canvas-container {
