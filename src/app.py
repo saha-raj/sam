@@ -20,6 +20,9 @@ sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
 sam.to(device=DEVICE)
 predictor = SamPredictor(sam)
 
+# Set points_per_side to a lower value (default is 32)
+predictor.model.points_per_side = 8  # Try a lower value for faster computation
+predictor.model.num_multimask_outputs = 1
 # Global variable to store the current image
 current_image = None
 
