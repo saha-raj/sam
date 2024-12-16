@@ -1,5 +1,16 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-data/
-models/checkpoints/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Model checkpoints
+models/checkpoints/*.pth
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

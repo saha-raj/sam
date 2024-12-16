@@ -50,16 +50,70 @@ h1 {
     padding: 8px 12px;
     cursor: pointer;
     font-family: 'JetBrains Mono', monospace;
-    border: 1px solid #ccc;
-    background: white;
+    border: none;
     border-radius: 4px;
-    width: 150px;
+    transition: background-color 0.3s;
 }
 
-.tool-controls button.active {
-    background-color: #007bff;
+/* Default states */
+#positivePoint {
+    background-color: #C3E8E1;  /* Light green */
+    color: black;
+}
+
+#negativePoint {
+    background-color: #EBD1D9;  /* Light red */
+    color: black;
+}
+
+/* Hover states (only when not disabled) */
+#positivePoint:not(:disabled):hover {
+    background-color: #06D6A0;  /* Slightly darker light green */
+}
+
+#negativePoint:not(:disabled):hover {
+    background-color: #EF476F;  /* Slightly darker light red */
+}
+
+/* Other buttons hover state */
+.tool-controls button:not(#positivePoint):not(#negativePoint):not(:disabled):hover {
+    background-color: #e9ecef;  /* Light gray hover */
+}
+
+/* Active states */
+#positivePoint.active {
+    background-color: #06D6A0;  /* Forest green */
     color: white;
-    border: none;
+    border: 2px solid #4cc9f0;  /* Darker border */
+}
+
+#negativePoint.active {
+    background-color: #EF5B5B;  /* Crimson red */
+    color: white;
+    border: 2px solid #4cc9f0;  /* Darker border */
+}
+
+/* Make sure non-active buttons have no border to maintain consistent sizing */
+#positivePoint, #negativePoint {
+    border: 2px solid transparent;  /* Invisible border to maintain size */
+}
+
+
+/* Default state for Generate Segment button */
+#generateSegment {
+    background-color: #e9ecef;  /* Light gray */
+}
+
+/* Hover state for Generate Segment button when not disabled */
+#generateSegment:not(:disabled):hover {
+    background-color: #00c8ff;  
+}
+
+/* Disabled state for all buttons */
+.tool-controls button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
 }
 
 .canvas-container {

@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.globalAlpha = 0.5;
                 ctx.drawImage(img, 0, 0);
                 hideLoader();
+                downloadButton.disabled = false;
             }
             img.src = 'data:image/png;base64,' + data.mask;
 
@@ -169,10 +170,15 @@ document.addEventListener('DOMContentLoaded', function() {
         points.push([x, y]);
         pointLabels.push(isPositivePoint ? 1 : 0);
 
+        if (points.length === 1) {
+            clearButton.disabled = false;
+            generateButton.disabled = false;
+        }
+
         const ctx = pointCanvas.getContext('2d');
         ctx.beginPath();
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = isPositivePoint ? '#00ff00' : '#ff0000';
+        ctx.fillStyle = isPositivePoint ? '#00ff00' : '#ff0099';
         ctx.fill();
     });
 
@@ -182,6 +188,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = pointCanvas.getContext('2d');
         ctx.clearRect(0, 0, pointCanvas.width, pointCanvas.height);
         maskCanvas.getContext('2d').clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
+        clearButton.disabled = true;
+        generateButton.disabled = true;
+        downloadButton.disabled = true;
     });
 
     positiveButton.addEventListener('click', () => {
