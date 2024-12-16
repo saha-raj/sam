@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let pointLabels = [];
     let currentImage = null;
     let isPositivePoint = true;
+    let originalFilename = '';
 
     // Add at the top with other constants
     const allButtons = [
@@ -60,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('image', file);
         
         try {
+            originalFilename = file.name;
+            
             const response = await fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -223,17 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const maskCtx = maskCanvas.getContext('2d');
             const maskData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
             
-            // DEBUG: More detailed mask inspection
-            console.log('First few mask pixels:');
-            for(let i = 0; i < 40; i += 4) {
-                console.log(`Pixel ${i/4}:`, {
-                    r: maskData.data[i],
-                    g: maskData.data[i+1],
-                    b: maskData.data[i+2],
-                    a: maskData.data[i+3]
-                });
-            }
-            
             // Get image data
             const imageCtx = imageCanvas.getContext('2d');
             const imageData = imageCtx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
@@ -241,8 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create composite
             const finalImageData = ctx.createImageData(tempCanvas.width, tempCanvas.height);
             for (let i = 0; i < imageData.data.length; i += 4) {
-                // Try using the red channel of the mask instead of alpha
-                if (maskData.data[i] > 0) {  // Changed to check red channel
+                if (maskData.data[i] > 0) {  // Check red channel
                     finalImageData.data[i] = imageData.data[i];        // R
                     finalImageData.data[i + 1] = imageData.data[i + 1];// G
                     finalImageData.data[i + 2] = imageData.data[i + 2];// B
@@ -257,9 +248,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             ctx.putImageData(finalImageData, 0, 0);
             
-            // Create download link
+            // Create download link with original filename
             const link = document.createElement('a');
-            link.download = 'masked_image.png';
+            const downloadName = originalFilename ? 
+                'masked_' + originalFilename : 
+                'masked_image.png';
+            link.download = downloadName;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
         } catch (error) {
