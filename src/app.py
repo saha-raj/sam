@@ -31,6 +31,15 @@ predictor.model.num_multimask_outputs = 1
 # Global variable to store the current image
 current_image = None
 
+def resize_image(image, max_size=640):
+    height, width = image.shape[:2]
+    if max(height, width) > max_size:
+        scale = max_size / max(height, width)
+        new_height = int(height * scale)
+        new_width = int(width * scale)
+        return cv2.resize(image, (new_width, new_height))
+    return image
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -39,7 +48,6 @@ def index():
 def upload_image():
     global current_image
     try:
-        print("Starting upload endpoint")
         if 'image' not in request.files:
             return jsonify({'error': 'No image uploaded'}), 400
         
@@ -47,31 +55,26 @@ def upload_image():
         if file.filename == '':
             return jsonify({'error': 'No image selected'}), 400
         
-        # Ensure the data directory exists
-        os.makedirs('data/raw', exist_ok=True)
-        
-        temp_path = os.path.join('data/raw', 'temp.jpg')
-        file.save(temp_path)
-        print(f"Saved image to {temp_path}")
-        
         # Read and store the image
-        current_image = cv2.imread(temp_path)
+        file_bytes = np.frombuffer(file.read(), np.uint8)
+        current_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         if current_image is None:
             return jsonify({'error': 'Failed to read image'}), 400
             
-        current_image = cv2.cvtColor(current_image, cv2.COLOR_BGR2RGB)
-        print(f"Converted image shape: {current_image.shape}")
+        # Resize image
+        current_image = resize_image(current_image, max_size=640)
         
-        # Set image in predictor
-        predictor.set_image(current_image)
-        print("Set image in predictor")
+        # Convert to base64 and send back to client
+        _, buffer = cv2.imencode('.png', current_image)
+        image_base64 = base64.b64encode(buffer).decode('utf-8')
         
-        return jsonify({'success': True})
+        return jsonify({
+            'success': True,
+            'image': image_base64
+        })
         
     except Exception as e:
-        import traceback
         print(f"Error in upload: {str(e)}")
-        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 @app.route('/generate_masks', methods=['POST'])
@@ -141,7 +144,9 @@ def segment():
         if current_image is None:
             return jsonify({'error': 'No image set'}), 400
             
-        predictor.set_image(current_image)
+        # Move the color conversion and predictor setup here
+        rgb_image = cv2.cvtColor(current_image, cv2.COLOR_BGR2RGB)
+        predictor.set_image(rgb_image)
         
         data = request.json
         point_coords = np.array(data['points'])

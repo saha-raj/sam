@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function setupCanvases(width, height) {
+        console.log('Setting up canvases with dimensions:', width, height);
         [imageCanvas, pointCanvas, maskCanvas].forEach(canvas => {
             canvas.width = width;
             canvas.height = height;
@@ -65,19 +66,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    setupCanvases(img.width, img.height);
-                    const ctx = imageCanvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    currentImage = img;
-                }
-                img.src = event.target.result;
+            // Use the resized image from server
+            const img = new Image();
+            img.onload = function() {
+                setupCanvases(img.width, img.height);
+                const ctx = imageCanvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                currentImage = img;
             }
-            reader.readAsDataURL(file);
+            img.src = 'data:image/png;base64,' + data.image;
             
         } catch (error) {
             console.error('Error:', error);
