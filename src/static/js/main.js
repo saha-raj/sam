@@ -12,9 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Parameter inputs
     const parameterInputs = {
-        pred_iou_thresh: document.getElementById('pred_iou_thresh'),
-        stability_score_thresh: document.getElementById('stability_score_thresh'),
-        min_mask_region_area: document.getElementById('min_mask_region_area')
+        pred_iou_thresh: { value: 0.88 },
+        stability_score_thresh: { value: 0.95 },
+        stability_score_offset: { value: 1.0 },
+        box_nms_thresh: { value: 0.7 },
+        crop_n_layers: { value: 0 },
+        crop_nms_thresh: { value: 0.7 },
+        crop_overlap_ratio: { value: 512 / 1500 },
+        crop_n_points_downscale_factor: { value: 1 },
+        min_mask_region_area: { value: 0 }
     };
 
     let points = [];

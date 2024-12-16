@@ -1,22 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'JetBrains Mono', monospace;
+}
+
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.left-panel {
+    min-width: 200px;
+    width: 20%;
+    max-width: 30vw;
     padding: 20px;
+    border-right: 1px solid #ccc;
+    background-color: #f8f9fa;
+}
+
+.right-panel {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
 }
 
 .controls {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .tool-controls {
-    margin-top: 10px;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .tool-controls button {
-    margin-right: 10px;
-    padding: 5px 10px;
+    padding: 8px 12px;
     cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+    width: 150px;
 }
 
 .tool-controls button.active {
@@ -25,35 +61,8 @@
     border: none;
 }
 
-.parameter-controls {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 15px;
-}
-
-.parameter {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.parameter label {
-    min-width: 200px;
-}
-
-.parameter input {
-    width: 200px;
-}
-
-.parameter .value {
-    min-width: 50px;
-}
-
 .canvas-container {
     position: relative;
-    margin-top: 20px;
     border: 1px solid #ccc;
     display: inline-block;
 }
@@ -91,6 +100,8 @@ canvas {
 
 .loader {
     position: absolute;
+    left: 50%;
+    top: 50%;
     margin-left: -25px;
     margin-top: -25px;
     width: 50px;
